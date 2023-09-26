@@ -20,10 +20,27 @@ defmodule StreamResetWeb.ResetStreamLive do
     {:noreply, socket}
   end
 
+  def handle_event("shuffle", _, socket) do
+    new_stream =
+      @users
+      |> Enum.shuffle()
+      |> IO.inspect(label: "New stream")
+
+    socket =
+      socket
+      |> stream(:users, new_stream, reset: true)
+
+    {:noreply, socket}
+  end
+
   def render(assigns) do
     ~H"""
     <.button phx-click={JS.patch(~p"/reset_stream")}>
-      Shuffle
+      Shuffle (patch)
+    </.button>
+
+    <.button phx-click="shuffle">
+      Shuffle (event)
     </.button>
 
     <.table id="users" rows={@streams.users}>
